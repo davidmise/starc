@@ -1,0 +1,17 @@
+[Unit]
+Description=Star Corporate Backend (Node.js)
+After=network.target
+
+[Service]
+Type=simple
+User=starc
+Group=starc
+WorkingDirectory=/var/www/starc/backend
+EnvironmentFile=/var/www/starc/backend/.env.production
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
