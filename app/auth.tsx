@@ -308,13 +308,13 @@ export default function AuthScreen() {
                     setPassword('password123');
                   }}
                 >
-                  <Text style={styles.testButtonText}>🧪 Use Test Credentials</Text>
+                  <Text style={styles.testButtonText}>Use Test Credentials</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={[styles.testButton, { backgroundColor: '#4CAF50' }]}
                   onPress={async () => {
-                    console.log('🧪 Testing token storage...');
+                    console.log('Testing token storage...');
                     const result = await testTokenStorage();
                     Alert.alert(
                       'Storage Test',
@@ -323,7 +323,7 @@ export default function AuthScreen() {
                     );
                   }}
                 >
-                  <Text style={styles.testButtonText}>🔧 Test Storage</Text>
+                  <Text style={styles.testButtonText}>Test Storage</Text>
                 </TouchableOpacity>
               </>
             )}

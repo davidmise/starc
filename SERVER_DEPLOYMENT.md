@@ -159,6 +159,7 @@ npm start
 curl http://localhost:8083/api/health
 curl http://localhost:8083/api/sessions
 
+
 # If working, stop the test server (Ctrl+C)
 ```
 
