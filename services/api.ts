@@ -5,10 +5,10 @@ import { Platform } from 'react-native';
 
 // API URLs for different environments
 const API_URLS = {
-  android: 'http://192.168.1.197:5000/api',      // Updated IP for Android
-  ios: 'http://192.168.1.197:5000/api',          // Updated IP for iOS
-  web: 'http://localhost:5000/api',              // localhost for web development
-  fallback: 'http://192.168.1.197:5000/api'      // Updated IP as fallback
+  android: 'http://158.220.102.111:81/api',      // Contabo production server for Android
+  ios: 'http://158.220.102.111:81/api',          // Contabo production server for iOS
+  web: 'http://158.220.102.111:81/api',          // Contabo production server for web
+  fallback: 'http://158.220.102.111:81/api'      // Contabo production server as fallback
 };
 
 // Get the appropriate API URL based on platform
@@ -30,7 +30,7 @@ console.log('📱 Platform:', Platform.OS);
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000, // Increased from 10000
+  timeout: 30000, // Increased to 30 seconds for production server
   headers: {
     'Content-Type': 'application/json',
   },
@@ -152,10 +152,12 @@ export const tokenStorage = {
 // Health check function
 export const healthCheck = async () => {
   try {
-    const response = await api.get('/health');
+    console.log('🏥 Performing health check...');
+    const response = await api.get('/health', { timeout: 10000 });
+    console.log('✅ Health check passed:', response.status);
     return response.status === 200;
-  } catch (error) {
-    console.error('❌ Health check failed:', error);
+  } catch (error: any) {
+    console.error('❌ Health check failed:', error.message);
     return false;
   }
 };
@@ -173,7 +175,7 @@ export const testAndFallbackApi = async () => {
     try {
       console.log(`🧪 Testing API URL: ${url}`);
       const response = await axios.get(`${url}/health`, { 
-        timeout: 5000,
+        timeout: 8000, // Increased timeout for production server
         headers: {
           'Content-Type': 'application/json',
         }
@@ -200,7 +202,7 @@ export const testAndFallbackApi = async () => {
   }
   
   console.error('❌ No working API URL found');
-  console.error('💡 Please ensure backend server is running on port 5000');
+  console.error('💡 Please ensure backend server is running and accessible');
   return null;
 };
 

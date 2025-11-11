@@ -25,10 +25,16 @@ const { errorHandler } = require('./middleware/errorHandler');
 const app = express();
 const server = createServer(app);
 
+// CORS origins from environment variable or allow all for production
+const corsOrigins = process.env.CORS_ORIGIN === '*' 
+  ? '*' 
+  : (process.env.CORS_ORIGIN || "http://localhost:8081").split(',').map(origin => origin.trim());
+
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:8081", "http://192.168.1.197:3000", "http://192.168.1.197:8081", "exp://192.168.1.197:8081"],
-    methods: ["GET", "POST"]
+    origin: corsOrigins === '*' ? '*' : corsOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -40,7 +46,7 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(cors({
-  origin: ["http://localhost:8081", "http://192.168.1.197:3000", "http://192.168.1.197:8081", "exp://192.168.1.197:8081"],
+  origin: corsOrigins === '*' ? '*' : corsOrigins,
   credentials: true
 }));
 app.use(limiter);

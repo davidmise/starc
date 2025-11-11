@@ -46,6 +46,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
 
+  // Check backend connection periodically
+  useEffect(() => {
+    let intervalId: any;
+    
+    const checkConnection = async () => {
+      try {
+        const isHealthy = await healthCheck();
+        setIsConnected(isHealthy);
+      } catch (error) {
+        console.error('❌ Connection check failed:', error);
+        setIsConnected(false);
+      }
+    };
+
+    // Initial check
+    checkConnection();
+
+    // Check every 10 seconds
+    intervalId = setInterval(checkConnection, 10000);
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
+
   // Check authentication status on app load only once
   useEffect(() => {
     let isMounted = true;
@@ -76,7 +103,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (isMounted) {
             setIsAuthenticated(false);
             setUser(null);
-            setIsConnected(false);
           }
         }
       } catch (error) {
@@ -84,7 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isMounted) {
           setIsAuthenticated(false);
           setUser(null);
-          setIsConnected(false);
         }
       } finally {
         if (isMounted) {
@@ -202,11 +227,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const retryConnection = async () => {
     try {
-      setIsConnected(false);
+      console.log('🔄 Retrying connection...');
       
       // Test connection by making a health check
       const isHealthy = await healthCheck();
+      console.log('🔄 Health check result:', isHealthy);
       setIsConnected(isHealthy);
+      
+      if (isHealthy) {
+        console.log('✅ Connection restored');
+      } else {
+        console.log('❌ Connection still unavailable');
+      }
     } catch (error) {
       console.error('❌ Connection retry failed:', error);
       setIsConnected(false);
